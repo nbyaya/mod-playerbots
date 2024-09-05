@@ -4,7 +4,7 @@
  */
 
 #include "Engine.h"
-
+#include "Helpers.h"
 #include "Action.h"
 #include "Event.h"
 #include "PerformanceMonitor.h"
@@ -409,7 +409,7 @@ ActionResult Engine::ExecuteAction(std::string const name, Event event, std::str
     return result ? ACTION_RESULT_OK : ACTION_RESULT_FAILED;
 }
 
-void Engine::addStrategy(std::string const name, bool init)
+void Engine::addStrategy(std::string_view name, bool init)
 {
     removeStrategy(name, init);
 
@@ -426,7 +426,7 @@ void Engine::addStrategy(std::string const name, bool init)
         Init();
 }
 
-void Engine::addStrategies(std::string first, ...)
+void Engine::addStrategies(std::string_view first, ...)
 {
     addStrategy(first, false);
 
@@ -446,7 +446,7 @@ void Engine::addStrategies(std::string first, ...)
     va_end(vl);
 }
 
-void Engine::addStrategiesNoInit(std::string first, ...)
+void Engine::addStrategiesNoInit(std::string_view first, ...)
 {
     addStrategy(first, false);
 
@@ -464,19 +464,21 @@ void Engine::addStrategiesNoInit(std::string first, ...)
     va_end(vl);
 }
 
-
-bool Engine::removeStrategy(std::string const name, bool init)
+bool Engine::removeStrategy(std::string_view name, bool init)
 {
-    std::map<std::string, Strategy*>::iterator i = strategies.find(name);
-    if (i == strategies.end())
-        return false;
+    for (auto it = strategies.cbegin(); it != strategies.cend(); ++it)
+    {
+        if (it->first == name)
+        {
+            LogAction("S:-%s", name);
+            strategies.erase(it);
+            if (init)
+                Init();
 
-    LogAction("S:-%s", name.c_str());
-    strategies.erase(i);
-    if (init)
-        Init();
-
-    return true;
+            return true;
+        }
+    }
+    return false;
 }
 
 void Engine::removeAllStrategies()
@@ -491,7 +493,13 @@ void Engine::toggleStrategy(std::string const name)
         addStrategy(name);
 }
 
-bool Engine::HasStrategy(std::string const name) { return strategies.find(name) != strategies.end(); }
+bool Engine::HasStrategy(std::string_view name)
+{
+    for (const auto& st : strategies)
+        if (st.first == name) return true;
+    
+    return false;
+}
 
 void Engine::ProcessTriggers(bool minimal)
 {
@@ -690,7 +698,7 @@ void Engine::LogAction(char const* format, ...)
 
 void Engine::ChangeStrategy(std::string const names)
 {
-    std::vector<std::string> splitted = split(names, ',');
+    std::vector<std::string> splitted = split(names, ",");
     for (std::vector<std::string>::iterator i = splitted.begin(); i != splitted.end(); i++)
     {
         char const* name = i->c_str();

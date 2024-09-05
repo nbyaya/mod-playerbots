@@ -4,7 +4,7 @@
  */
 
 #include "PositionAction.h"
-
+#include "Helpers.h"
 #include "Event.h"
 #include "Playerbots.h"
 #include "PositionValue.h"
@@ -27,7 +27,7 @@ void TellPosition(PlayerbotAI* botAI, std::string const name, PositionInfo pos)
     botAI->TellMaster(out);
 }
 
-bool PositionAction::Execute(Event event)
+bool PositionAction::Execute(Event& event)
 {
     std::string const param = event.getParam();
     if (param.empty())
@@ -49,7 +49,7 @@ bool PositionAction::Execute(Event event)
         return true;
     }
 
-    std::vector<std::string> params = split(param, ' ');
+    std::vector<std::string> params = split(param, " ");
     if (params.size() != 2)
     {
         botAI->TellMaster("Whisper position <name> ?/set/reset");
@@ -65,7 +65,7 @@ bool PositionAction::Execute(Event event)
         return true;
     }
 
-    std::vector<std::string> coords = split(action, ',');
+    std::vector<std::string> coords = split(action, ",");
     if (coords.size() == 3)
     {
         pos.Set(atoi(coords[0].c_str()), atoi(coords[1].c_str()), atoi(coords[2].c_str()), botAI->GetBot()->GetMapId());
@@ -102,7 +102,7 @@ bool PositionAction::Execute(Event event)
     return false;
 }
 
-bool MoveToPositionAction::Execute(Event event)
+bool MoveToPositionAction::Execute(Event& event)
 {
     PositionInfo pos = context->GetValue<PositionMap&>("position")->Get()[qualifier];
     if (!pos.isSet())
@@ -123,7 +123,7 @@ bool MoveToPositionAction::isUseful()
     return pos.isSet() && distance > sPlayerbotAIConfig->followDistance && distance < sPlayerbotAIConfig->reactDistance;
 }
 
-bool SetReturnPositionAction::Execute(Event event)
+bool SetReturnPositionAction::Execute(Event& event)
 {
     PositionMap& posMap = context->GetValue<PositionMap&>("position")->Get();
     PositionInfo returnPos = posMap["return"];

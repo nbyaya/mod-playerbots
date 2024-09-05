@@ -4,7 +4,7 @@
  */
 
 #include "GoAction.h"
-
+#include "Helpers.h"
 #include "ChooseTravelTargetAction.h"
 #include "Event.h"
 #include "Formations.h"
@@ -16,7 +16,7 @@
 std::vector<std::string> split(std::string const s, char delim);
 char* strstri(char const* haystack, char const* needle);
 
-bool GoAction::Execute(Event event)
+bool GoAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -112,7 +112,7 @@ bool GoAction::Execute(Event event)
 
     if (param.find(";") != std::string::npos)
     {
-        std::vector<std::string> coords = split(param, ';');
+        std::vector<std::string> coords = split(param, ";");
         float x = atof(coords[0].c_str());
         float y = atof(coords[1].c_str());
         float z;
@@ -167,7 +167,7 @@ bool GoAction::Execute(Event event)
 
     if (param.find(",") != std::string::npos)
     {
-        std::vector<std::string> coords = split(param, ',');
+        std::vector<std::string> coords = split(param, ",");
         float x = atof(coords[0].c_str());
         float y = atof(coords[1].c_str());
         Zone2MapCoordinates(x, y, bot->GetZoneId());

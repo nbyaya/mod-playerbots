@@ -230,7 +230,7 @@ void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, std::ostrings
     out << "Reward pending";
 }
 
-bool TurnInQueryQuestAction::Execute(Event event)
+bool TurnInQueryQuestAction::Execute(Event& event)
 {
     WorldPacket pakcet = event.getPacket();
     ObjectGuid guid;

@@ -10,6 +10,7 @@
 #include <istream>
 #include <string>
 
+#include "Helpers.h"
 #include "ChannelMgr.h"
 #include "CharacterCache.h"
 #include "CharacterPackets.h"
@@ -1080,7 +1081,7 @@ std::vector<std::string> PlayerbotHolder::HandlePlayerbotCommand(char const* arg
         }
     }
 
-    std::vector<std::string> chars = split(charnameStr, ',');
+    std::vector<std::string> chars = split(charnameStr, ",");
     for (std::vector<std::string>::iterator i = chars.begin(); i != chars.end(); i++)
     {
         std::string const s = *i;
@@ -1303,8 +1304,7 @@ void PlayerbotMgr::HandleCommand(uint32 type, std::string const text)
 
     if (text.find(sPlayerbotAIConfig->commandSeparator) != std::string::npos)
     {
-        std::vector<std::string> commands;
-        split(commands, text, sPlayerbotAIConfig->commandSeparator.c_str());
+        std::vector<std::string> commands = split(text, sPlayerbotAIConfig->commandSeparator.c_str());
         for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); ++i)
         {
             HandleCommand(type, *i);

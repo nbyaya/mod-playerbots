@@ -15,7 +15,7 @@ class FlameLeviathanVehicleAction : public MovementAction
 {
 public:
     FlameLeviathanVehicleAction(PlayerbotAI* botAI) : MovementAction(botAI, "flame leviathan vehicle") {}
-    bool Execute(Event event) override;
+    bool Execute(Event& event) override;
 
 protected:
     bool MoveAvoidChasing(Unit* target);
@@ -34,7 +34,7 @@ class FlameLeviathanEnterVehicleAction : public MovementAction
 {
 public:
     FlameLeviathanEnterVehicleAction(PlayerbotAI* botAI) : MovementAction(botAI, "flame leviathan enter vehicle") {}
-    bool Execute(Event event);
+    bool Execute(Event& event);
 
 protected:
     bool EnterVehicle(Unit* vehicleBase, bool moveIfFar);

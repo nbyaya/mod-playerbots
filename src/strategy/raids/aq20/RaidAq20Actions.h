@@ -9,6 +9,6 @@ class Aq20UseCrystalAction : public MovementAction
 {
 public:
     Aq20UseCrystalAction(PlayerbotAI* botAI, std::string const name = "aq20 use crystal") : MovementAction(botAI, name) {}
-    bool Execute(Event event) override;
+    bool Execute(Event& event) override;
 };
 #endif

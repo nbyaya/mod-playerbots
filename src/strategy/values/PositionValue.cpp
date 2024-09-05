@@ -4,7 +4,7 @@
  */
 
 #include "PositionValue.h"
-
+#include "Helpers.h"
 #include "Playerbots.h"
 
 PositionValue::PositionValue(PlayerbotAI* botAI, std::string const name)
@@ -38,16 +38,16 @@ bool PositionValue::Load(std::string const text)
 {
     value.clear();
 
-    std::vector<std::string> ss = split(text, '^');
+    std::vector<std::string> ss = split(text, "^");
     for (std::vector<std::string>::iterator i = ss.begin(); i != ss.end(); ++i)
     {
-        std::vector<std::string> s1 = split(*i, '=');
+        std::vector<std::string> s1 = split(*i, "=");
         if (s1.size() != 2)
             continue;
 
         std::string const name = s1[0];
 
-        std::vector<std::string> s2 = split(s1[1], ',');
+        std::vector<std::string> s2 = split(s1[1], ",");
         if (s2.size() != 4)
             continue;
 

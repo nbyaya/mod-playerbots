@@ -4,7 +4,7 @@
  */
 
 #include "MailAction.h"
-
+#include "Helpers.h"
 #include "ChatHelper.h"
 #include "Event.h"
 #include "Mail.h"
@@ -189,7 +189,7 @@ TakeMailProcessor TakeMailProcessor::instance;
 DeleteMailProcessor DeleteMailProcessor::instance;
 ReadMailProcessor ReadMailProcessor::instance;
 
-std::map<uint32, Mail*> filterList(std::vector<Mail*> src, std::string const filter)
+std::map<uint32, Mail*> filterList(std::vector<Mail*> src, std::string_view filter)
 {
     std::map<uint32, Mail*> result;
     if (filter.empty() || filter == "*")
@@ -203,7 +203,7 @@ std::map<uint32, Mail*> filterList(std::vector<Mail*> src, std::string const fil
 
     if (filter.find("-") != std::string::npos)
     {
-        std::vector<std::string> ss = split(filter, '-');
+        std::vector<std::string> ss = split(filter, "-");
         uint32 from = 0;
         uint32 to = src.size() - 1;
 
@@ -231,7 +231,7 @@ std::map<uint32, Mail*> filterList(std::vector<Mail*> src, std::string const fil
         return result;
     }
 
-    std::vector<std::string> ss = split(filter, ',');
+    std::vector<std::string> ss = split(filter, ",");
     for (std::vector<std::string>::iterator i = ss.begin(); i != ss.end(); ++i)
     {
         uint32 idx = atoi(i->c_str()) - 1;
@@ -248,7 +248,7 @@ std::map<uint32, Mail*> filterList(std::vector<Mail*> src, std::string const fil
     return result;
 }
 
-bool MailAction::Execute(Event event)
+bool MailAction::Execute(Event& event)
 {
     Player* master = GetMaster();
     if (!master)
@@ -276,7 +276,7 @@ bool MailAction::Execute(Event event)
         return false;
     }
 
-    std::vector<std::string> ss = split(text, ' ');
+    std::vector<std::string> ss = split(text, " ");
     std::string const action = ss[0];
     std::string const filter = ss.size() > 1 ? ss[1] : "";
 

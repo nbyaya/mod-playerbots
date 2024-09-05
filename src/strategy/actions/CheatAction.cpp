@@ -4,16 +4,16 @@
  */
 
 #include "CheatAction.h"
-
+#include "Helpers.h"
 #include "Playerbots.h"
 
-bool CheatAction::Execute(Event event)
+bool CheatAction::Execute(Event& event)
 {
     std::string const param = event.getParam();
 
     uint32 cheatMask = (uint32)botAI->GetCheat();
 
-    std::vector<std::string> splitted = split(param, ',');
+    std::vector<std::string> splitted = split(param, ",");
     for (std::vector<std::string>::iterator i = splitted.begin(); i != splitted.end(); i++)
     {
         const char* name = i->c_str();

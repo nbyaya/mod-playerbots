@@ -18,7 +18,7 @@
 #include "ServerFacade.h"
 #include "PossibleRpgTargetsValue.h"
 
-bool ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid, uint32 max, GuidVector const& nearGuids)
+bool ChooseRpgTargetAction::HasSameTarget(const ObjectGuid& guid, const uint32& max, GuidVector const& nearGuids)
 {
     if (botAI->HasRealPlayerMaster())
         return false;
@@ -70,12 +70,10 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
         {
             triggerNode->setTrigger(trigger);
 
-            if (triggerNode->getFirstRelevance() < maxRelevance || triggerNode->getFirstRelevance() > 2.0f)
+            if (!triggerNode->getTrigger()->IsActive())
                 continue;
 
-            Trigger* trigger = triggerNode->getTrigger();
-
-            if (!trigger->IsActive())
+            if (triggerNode->getFirstRelevance() < maxRelevance || triggerNode->getFirstRelevance() > 2.0f)
                 continue;
 
             NextAction** nextActions = triggerNode->getHandlers();
@@ -115,7 +113,7 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
     return floor((maxRelevance - 1.0) * 1000.0f);
 }
 
-bool ChooseRpgTargetAction::Execute(Event event)
+bool ChooseRpgTargetAction::Execute(Event& event)
 {
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
     Player* master = botAI->GetMaster();
@@ -246,14 +244,14 @@ bool ChooseRpgTargetAction::Execute(Event event)
         if (!guidP)
             continue;
 
-        guidps.push_back(guidP);
+        guidps.push_back(std::move(guidP));
         relevances.push_back(target.second);
     }
 
     std::mt19937 gen(time(0));
     sTravelMgr->weighted_shuffle(guidps.begin(), guidps.end(), relevances.begin(), relevances.end(), gen);
 
-    GuidPosition guidP(guidps.front());
+    GuidPosition& guidP = guidps.front();
     if (!guidP)
     {
         RESET_AI_VALUE(GuidPosition, "rpg target");

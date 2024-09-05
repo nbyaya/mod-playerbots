@@ -16,7 +16,7 @@ class SayAction : public Action, public Qualified
 public:
     SayAction(PlayerbotAI* botAI);
 
-    bool Execute(Event event) override;
+    bool Execute(Event& event) override;
     bool isUseful() override;
     std::string const getName() override { return "say::" + qualifier; }
 
@@ -29,7 +29,7 @@ class ChatReplyAction : public Action
 {
 public:
     ChatReplyAction(PlayerbotAI* ai) : Action(ai, "chat message") {}
-    virtual bool Execute(Event event) { return true; }
+    virtual bool Execute(Event& event) { return true; }
     bool isUseful() { return true; }
 
     static void ChatReplyDo(Player* bot, uint32& type, uint32& guid1, uint32& guid2, std::string& msg, std::string& chanName, std::string& name);
@@ -38,6 +38,6 @@ public:
     static bool HandleWTBItemsReply(Player* bot, ChatChannelSource chatChannelSource, std::string& msg, std::string& name);
     static bool HandleLFGQuestsReply(Player* bot, ChatChannelSource chatChannelSource, std::string& msg, std::string& name);
     static bool SendGeneralResponse(Player* bot, ChatChannelSource chatChannelSource, std::string& responseMessage, std::string& name);
-    static std::string GenerateReplyMessage(Player* bot, std::string& incomingMessage, uint32& guid1, std::string& name);
+    static std::string GenerateReplyMessage(Player* bot, std::string_view incomingMessage, uint32& guid1, std::string& name);
 };
 #endif

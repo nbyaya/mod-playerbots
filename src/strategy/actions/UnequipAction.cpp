@@ -4,21 +4,21 @@
  */
 
 #include "UnequipAction.h"
-
+#include "Helpers.h"
 #include "Event.h"
 #include "ItemCountValue.h"
 #include "Playerbots.h"
 
 std::vector<std::string> split(std::string const s, char delim);
 
-bool UnequipAction::Execute(Event event)
+bool UnequipAction::Execute(Event& event)
 {
     std::string const text = event.getParam();
 
     ItemIds ids = chat->parseItems(text);
     if (ids.empty())
     {
-        std::vector<std::string> names = split(text, ',');
+        std::vector<std::string> names = split(text, ",");
         for (std::vector<std::string>::iterator i = names.begin(); i != names.end(); ++i)
         {
             uint32 slot = chat->parseSlot(*i);

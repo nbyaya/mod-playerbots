@@ -74,7 +74,7 @@ enum BotState
     BOT_STATE_MAX
 };
 
-bool IsAlliance(uint8 race);
+bool IsAlliance(const uint8& race);
 
 class PlayerbotChatHandler : protected ChatHandler
 {
@@ -380,8 +380,8 @@ public:
     void UpdateAI(uint32 elapsed, bool minimal = false) override;
     void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
 
-    std::string const HandleRemoteCommand(std::string const command);
-    void HandleCommand(uint32 type, std::string const text, Player* fromPlayer);
+    std::string const HandleRemoteCommand(std::string_view command);
+    void HandleCommand(const uint32& type, const std::string& text, Player* fromPlayer);
     void QueueChatResponse(const ChatQueuedReply reply);
     void HandleBotOutgoingPacket(WorldPacket const& packet);
     void HandleMasterIncomingPacket(WorldPacket const& packet);
@@ -395,8 +395,8 @@ public:
     void ClearStrategies(BotState type);
     std::vector<std::string> GetStrategies(BotState type);
     void ApplyInstanceStrategies(uint32 mapId, bool tellMaster = false);
-    bool ContainsStrategy(StrategyType type);
-    bool HasStrategy(std::string const name, BotState type);
+    bool ContainsStrategy(const StrategyType& type);
+    bool HasStrategy(std::string_view name, const BotState& type);
     BotState GetState() { return currentState; };
     void ResetStrategies(bool load = false);
     void ReInitCurrentEngine();
@@ -544,7 +544,7 @@ public:
     AiObjectContext* GetAiObjectContext() { return aiObjectContext; }
     ChatHelper* GetChatHelper() { return &chatHelper; }
     bool IsOpposing(Player* player);
-    static bool IsOpposing(uint8 race1, uint8 race2);
+    static bool IsOpposing(const uint8& race1, const uint8& race2);
     PlayerbotSecurity* GetSecurity() { return &security; }
 
     Position GetJumpDestination() { return jumpDestination; }
@@ -554,9 +554,9 @@ public:
     bool CanMove();
     bool IsInRealGuild();
     static std::vector<std::string> dispel_whitelist;
-    bool EqualLowercaseName(std::string s1, std::string s2);
-    InventoryResult CanEquipItem(uint8 slot, uint16& dest, Item* pItem, bool swap, bool not_loading = true) const;
-    uint8 FindEquipSlot(ItemTemplate const* proto, uint32 slot, bool swap) const;
+    bool EqualLowercaseName(std::string_view s1, std::string_view s2);
+    InventoryResult CanEquipItem(const uint8& slot, uint16& dest, Item* pItem, bool swap, bool not_loading = true) const;
+    uint8 FindEquipSlot(ItemTemplate const* proto, const uint32& slot, bool swap) const;
     std::vector<Item*> GetInventoryAndEquippedItems();
     std::vector<Item*> GetInventoryItems();
     uint32 GetInventoryItemsCountWithId(uint32 itemId);
@@ -577,7 +577,7 @@ private:
     bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
 
     void HandleCommands();
-    void HandleCommand(uint32 type, const std::string& text, Player& fromPlayer, const uint32 lang = LANG_UNIVERSAL);
+    void HandleCommand(const uint32& type, std::string_view text, Player& fromPlayer, const uint32 lang = LANG_UNIVERSAL);
 
 protected:
     Player* bot;

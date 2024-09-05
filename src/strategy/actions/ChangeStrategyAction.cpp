@@ -4,18 +4,18 @@
  */
 
 #include "ChangeStrategyAction.h"
-
+#include "Helpers.h"
 #include "Event.h"
 #include "PlayerbotDbStore.h"
 #include "Playerbots.h"
 
-bool ChangeCombatStrategyAction::Execute(Event event)
+bool ChangeCombatStrategyAction::Execute(Event& event)
 {
     std::string const text = event.getParam();
     botAI->ChangeStrategy(text.empty() ? getName() : text, BOT_STATE_COMBAT);
     if (event.GetSource() == "co")
     {
-        std::vector<std::string> splitted = split(text, ',');
+        std::vector<std::string> splitted = split(text, ",");
         for (std::vector<std::string>::iterator i = splitted.begin(); i != splitted.end(); i++)
         {
             const char* name = i->c_str();
@@ -35,7 +35,7 @@ bool ChangeCombatStrategyAction::Execute(Event event)
     return true;
 }
 
-bool ChangeNonCombatStrategyAction::Execute(Event event)
+bool ChangeNonCombatStrategyAction::Execute(Event& event)
 {
     std::string const text = event.getParam();
 
@@ -53,7 +53,7 @@ bool ChangeNonCombatStrategyAction::Execute(Event event)
     botAI->ChangeStrategy(text, BOT_STATE_NON_COMBAT);
     if (event.GetSource() == "nc")
     {
-        std::vector<std::string> splitted = split(text, ',');
+        std::vector<std::string> splitted = split(text, ",");
         for (std::vector<std::string>::iterator i = splitted.begin(); i != splitted.end(); i++)
         {
             const char* name = i->c_str();
@@ -73,7 +73,7 @@ bool ChangeNonCombatStrategyAction::Execute(Event event)
     return true;
 }
 
-bool ChangeDeadStrategyAction::Execute(Event event)
+bool ChangeDeadStrategyAction::Execute(Event& event)
 {
     std::string const text = event.getParam();
     botAI->ChangeStrategy(text, BOT_STATE_DEAD);

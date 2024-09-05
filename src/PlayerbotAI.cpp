@@ -19,6 +19,7 @@
 #include "ExternalEventHelper.h"
 #include "GuildMgr.h"
 #include "GuildTaskMgr.h"
+#include "Helpers.h"
 #include "LFGMgr.h"
 #include "LastMovementValue.h"
 #include "LastSpellCastValue.h"
@@ -447,9 +448,9 @@ void PlayerbotAI::HandleCommands()
 }
 
 std::map<std::string, ChatMsg> chatMap;
-void PlayerbotAI::HandleCommand(uint32 type, const std::string& text, Player& fromPlayer, const uint32 lang)
+void PlayerbotAI::HandleCommand(const uint32& type, std::string_view text, Player& fromPlayer, const uint32 lang)
 {
-    std::string filtered = text;
+    std::string filtered(text);
 
     if (!IsAllowedCommand(filtered) && !GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE,
                                                                      type != CHAT_MSG_WHISPER, &fromPlayer))
@@ -468,8 +469,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const std::string& text, Player& fr
 
     if (filtered.find(sPlayerbotAIConfig->commandSeparator) != std::string::npos)
     {
-        std::vector<std::string> commands;
-        split(commands, filtered, sPlayerbotAIConfig->commandSeparator.c_str());
+        std::vector<std::string> commands = split(filtered, sPlayerbotAIConfig->commandSeparator.c_str());
         for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); ++i)
         {
             HandleCommand(type, *i, fromPlayer);
@@ -741,7 +741,7 @@ bool PlayerbotAI::IsAllowedCommand(std::string const text)
     return false;
 }
 
-void PlayerbotAI::HandleCommand(uint32 type, std::string const text, Player* fromPlayer)
+void PlayerbotAI::HandleCommand(const uint32& type, const std::string& text, Player* fromPlayer)
 {
     if (!GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, fromPlayer))
         return;
@@ -754,8 +754,7 @@ void PlayerbotAI::HandleCommand(uint32 type, std::string const text, Player* fro
 
     if (text.find(sPlayerbotAIConfig->commandSeparator) != std::string::npos)
     {
-        std::vector<std::string> commands;
-        split(commands, text, sPlayerbotAIConfig->commandSeparator.c_str());
+        std::vector<std::string> commands = split(text, sPlayerbotAIConfig->commandSeparator.c_str());
         for (std::vector<std::string>::iterator i = commands.begin(); i != commands.end(); ++i)
         {
             HandleCommand(type, *i, fromPlayer);
@@ -1600,7 +1599,7 @@ bool PlayerbotAI::PlayEmote(uint32 emote)
     return false;
 }
 
-bool PlayerbotAI::ContainsStrategy(StrategyType type)
+bool PlayerbotAI::ContainsStrategy(const StrategyType& type)
 {
     for (uint8 i = 0; i < BOT_STATE_MAX; i++)
     {
@@ -1611,7 +1610,10 @@ bool PlayerbotAI::ContainsStrategy(StrategyType type)
     return false;
 }
 
-bool PlayerbotAI::HasStrategy(std::string const name, BotState type) { return engines[type]->HasStrategy(name); }
+bool PlayerbotAI::HasStrategy(std::string_view name, const BotState& type)
+{
+    return engines[type]->HasStrategy(name);
+}
 
 void PlayerbotAI::ResetStrategies(bool load)
 {
@@ -3774,7 +3776,7 @@ bool PlayerbotAI::canDispel(SpellInfo const* spellInfo, uint32 dispelType)
                                         strcmpi((const char*)spellInfo->SpellName[0], "ice armor"));
 }
 
-bool IsAlliance(uint8 race)
+bool IsAlliance(const uint8& race)
 {
     return race == RACE_HUMAN || race == RACE_DWARF || race == RACE_NIGHTELF || race == RACE_GNOME ||
            race == RACE_DRAENEI;
@@ -4108,7 +4110,7 @@ bool PlayerbotAI::AllowActivity(ActivityType activityType, bool checkNow)
 
 bool PlayerbotAI::IsOpposing(Player* player) { return IsOpposing(player->getRace(), bot->getRace()); }
 
-bool PlayerbotAI::IsOpposing(uint8 race1, uint8 race2)
+bool PlayerbotAI::IsOpposing(const uint8& race1, const uint8& race2)
 {
     return (IsAlliance(race1) && !IsAlliance(race2)) || (!IsAlliance(race1) && IsAlliance(race2));
 }
@@ -4410,7 +4412,7 @@ void PlayerbotAI::_fillGearScoreData(Player* player, Item* item, std::vector<uin
     }
 }
 
-std::string const PlayerbotAI::HandleRemoteCommand(std::string const command)
+std::string const PlayerbotAI::HandleRemoteCommand(std::string_view command)
 {
     if (command == "state")
     {
@@ -5241,7 +5243,7 @@ bool PlayerbotAI::IsInRealGuild()
 
 void PlayerbotAI::QueueChatResponse(const ChatQueuedReply chatReply) { chatReplies.push_back(std::move(chatReply)); }
 
-bool PlayerbotAI::EqualLowercaseName(std::string s1, std::string s2)
+bool PlayerbotAI::EqualLowercaseName(std::string_view s1, std::string_view s2)
 {
     if (s1.length() != s2.length())
     {
@@ -5257,7 +5259,7 @@ bool PlayerbotAI::EqualLowercaseName(std::string s1, std::string s2)
     return true;
 }
 
-InventoryResult PlayerbotAI::CanEquipItem(uint8 slot, uint16& dest, Item* pItem, bool swap, bool not_loading) const
+InventoryResult PlayerbotAI::CanEquipItem(const uint8& slot, uint16& dest, Item* pItem, bool swap, bool not_loading) const
 {
     dest = 0;
     if (pItem)
@@ -5408,7 +5410,7 @@ InventoryResult PlayerbotAI::CanEquipItem(uint8 slot, uint16& dest, Item* pItem,
     return !swap ? EQUIP_ERR_ITEM_NOT_FOUND : EQUIP_ERR_ITEMS_CANT_BE_SWAPPED;
 }
 
-uint8 PlayerbotAI::FindEquipSlot(ItemTemplate const* proto, uint32 slot, bool swap) const
+uint8 PlayerbotAI::FindEquipSlot(ItemTemplate const* proto, const uint32& slot, bool swap) const
 {
     uint8 slots[4];
     slots[0] = NULL_SLOT;

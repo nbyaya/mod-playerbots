@@ -15,7 +15,7 @@ class TellLosAction : public Action
 public:
     TellLosAction(PlayerbotAI* botAI) : Action(botAI, "los") {}
 
-    bool Execute(Event event) override;
+    bool Execute(Event& event) override;
 
 private:
     void ListUnits(std::string const title, GuidVector units);
@@ -27,7 +27,7 @@ class TellAuraAction : public Action
 public:
     TellAuraAction(PlayerbotAI* ai) : Action(ai, "aura") {}
 
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
 };
 
 class TellEstimatedDpsAction : public Action
@@ -35,7 +35,7 @@ class TellEstimatedDpsAction : public Action
 public:
     TellEstimatedDpsAction(PlayerbotAI* ai) : Action(ai, "tell estimated dps") {}
 
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
 };
 
 class TellCalculateItemAction : public Action
@@ -43,7 +43,7 @@ class TellCalculateItemAction : public Action
 public:
     TellCalculateItemAction(PlayerbotAI* ai) : Action(ai, "calculate item") {}
 
-    virtual bool Execute(Event event);
+    virtual bool Execute(Event& event);
 };
 
 #endif
