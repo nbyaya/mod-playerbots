@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `playerbots_arena_team_names`;
+﻿DROP TABLE IF EXISTS `playerbots_arena_team_names`;
 CREATE TABLE `playerbots_arena_team_names` (
                                                `name_id` mediumint(8) NOT NULL AUTO_INCREMENT UNIQUE,
                                                `name` varchar(24) NOT NULL UNIQUE,
@@ -280,9 +280,9 @@ INSERT INTO `playerbots_arena_team_names` (`name_id`,`name`, `type`) VALUES
 (NULL, ' 轻率的 ', 5),
 (NULL, ' 冰冠冰川 ', 5),
 (NULL, ' 随机的 ', 5),
-(NULL, ' 致命的 ', 5),
+(NULL, ' 致命鬼影 ', 5),
 (NULL, ' 暗影弱点 ', 5),
-(NULL, ' 神秘的 ', 5),
+(NULL, ' 神秘的小强 ', 5),
 (NULL, ' 被击败 ', 5),
 (NULL, ' 暗影边缘 ', 5),
 (NULL, ' 神奇五侠 ', 5),
