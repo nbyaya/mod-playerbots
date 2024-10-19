@@ -521,7 +521,7 @@ INSERT INTO `ai_playerbot_texts` (`name`, `text`, `say_type`, `reply_type`, `tex
 ('suggest_something', '我刚刚退出然后又登录回来了', 0, 0, '', '', '', '', '', '', '', ''),
 ('suggest_something', '你们能小声点吗，我在%zone_name中迷路了', 0, 0, '', '', '', '', '', '', '', ''),
 ('suggest_something', '有人在%zone_name中想和我一起喝一杯吗...hic!', 0, 0, '', '', '', '', '', '', '', ''),
-('suggest_something', '哈哈哈哈哈哈哈哈dirin diring ingggggg hahahahaheeeeeeeeeeeeee', 0, 0, '', '', '', '', '', '', '', ''),
+('suggest_something', '哈哈哈哈嘿嘿嘿，叮叮叮，嘤嘤嘤，哈哈哈哈嘿嘿嘿。', 0, 0, '', '', '', '', '', '', '', ''),
 ('suggest_something', '诱饵曾经是可信的', 0, 0, '', '', '', '', '', '', '', ''),
 ('suggest_something', '也许你只是失去了你的纯真', 0, 0, '', '', '', '', '', '', '', ''),
 ('suggest_something', '有公会愿意带%my_role吗？', 0, 0, '', '', '', '', '', '', '', ''),
@@ -1456,19 +1456,3 @@ INSERT INTO `ai_playerbot_texts` (`name`, `text`, `say_type`, `reply_type`, `tex
 
 
 ('dummy_end', '假人', 0, 0, '', '', '', '', '', '', '', '');
-
-DROP TABLE IF EXISTS `ai_playerbot_texts_chance`;
-
-CREATE TABLE IF NOT EXISTS `ai_playerbot_texts_chance` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `probability` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=UTF8;
-
-/*!40000 ALTER TABLE `ai_playerbot_texts_chance` DISABLE KEYS */;
-INSERT INTO `ai_playerbot_texts_chance` (`id`, `name`, `probability`) VALUES
-	(1, 'taunt', 30),
-	(2, 'aoe', 75),
-	(3, 'loot', 20);
-/*!40000 ALTER TABLE `ai_playerbot_texts_chance` ENABLE KEYS */;
