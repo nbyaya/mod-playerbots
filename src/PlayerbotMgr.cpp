@@ -450,8 +450,11 @@ void PlayerbotHolder::OnBotLogin(Player* const bot)
     Player* master = botAI->GetMaster();
     if (!master)
     {
-        // Log a warning to indicate that the master is null
-        LOG_ERROR("mod-playerbots", "Master is null for bot with GUID: {}", bot->GetGUID().GetRawValue());
+        // Only log if this is a bot that should have a master
+        if (!sPlayerbotAIConfig->IsInRandomAccountList(bot->GetSession()->GetAccountId()))
+        {
+            LOG_DEBUG("mod-playerbots", "Master is null for bot with GUID: {}", bot->GetGUID().GetRawValue());
+        }
         return;
     }
 
