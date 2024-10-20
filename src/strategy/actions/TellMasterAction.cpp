@@ -16,7 +16,7 @@ bool TellMasterAction::Execute(Event event)
 
 bool OutOfReactRangeAction::Execute(Event event)
 {
-    botAI->TellMaster("Wait for me!");
+    botAI->TellMaster("等我一下！");
     return true;
 }
 

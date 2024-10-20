@@ -79,7 +79,7 @@ void TellLosAction::ListGameObjects(std::string const title, GuidVector gos)
 
 bool TellAuraAction::Execute(Event event)
 {
-    botAI->TellMaster("--- Auras ---");
+    botAI->TellMaster("--- 光环 ---");
     sLog->outMessage("playerbot", LOG_LEVEL_DEBUG, "--- Auras ---");
     Unit::AuraApplicationMap& map = bot->GetAppliedAuras();
     for (Unit::AuraApplicationMap::iterator i = map.begin(); i != map.end(); ++i)

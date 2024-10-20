@@ -602,7 +602,7 @@ bool SetFormationAction::Execute(Event event)
         str << "Invalid formation: |cffff0000" << formation;
         botAI->TellMaster(str);
         botAI->TellMaster(
-            "Please set to any of:|cffffffff near (default), queue, chaos, circle, line, shield, arrow, melee, far");
+            "请设置为以下任意选项：|cffffffff 近（默认），队列，混沌，圆形，直线，护盾，箭头，近战，远程");
         return false;
     }
 

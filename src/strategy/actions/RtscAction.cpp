@@ -21,7 +21,7 @@ bool RTSCAction::Execute(Event event)
     {
         master->learnSpell(RTSC_MOVE_SPELL, false);
         botAI->TellMasterNoFacing("RTS control enabled.");
-        botAI->TellMasterNoFacing("Aedm (Awesome energetic do move) spell trained.");
+        botAI->TellMasterNoFacing("Aedm（精彩的能量移动）法术已学习。");
     }
     else if (command == "reset")
     {

@@ -126,7 +126,7 @@ void TradeStatusAction::BeginTrade()
     ListItemsVisitor visitor;
     IterateItems(&visitor);
 
-    botAI->TellMaster("=== Inventory ===");
+    botAI->TellMaster("=== 背包 ===");
     TellItems(visitor.items, visitor.soulbound);
 
     if (sRandomPlayerbotMgr->IsRandomBot(bot))
@@ -175,9 +175,9 @@ bool TradeStatusAction::CheckTrade()
         {
             if (bot->GetGroup() && bot->GetGroup()->IsMember(bot->GetTrader()->GetGUID()) &&
                 botAI->HasRealPlayerMaster())
-                botAI->TellMasterNoFacing("Thank you " + chat->FormatWorldobject(bot->GetTrader()));
+                botAI->TellMasterNoFacing("谢谢你 " + chat->FormatWorldobject(bot->GetTrader()));
             else
-                bot->Say("Thank you " + chat->FormatWorldobject(bot->GetTrader()),
+                bot->Say("谢谢你 " + chat->FormatWorldobject(bot->GetTrader()),
                          (bot->GetTeamId() == TEAM_ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         }
         return isGettingItem;
@@ -271,16 +271,16 @@ bool TradeStatusAction::CheckTrade()
         switch (urand(0, 4))
         {
             case 0:
-                botAI->TellMaster("A pleasure doing business with you");
+                botAI->TellMaster("很高兴与你做生意");
                 break;
             case 1:
-                botAI->TellMaster("Fair trade");
+                botAI->TellMaster("公平交易");
                 break;
             case 2:
-                botAI->TellMaster("Thanks");
+                botAI->TellMaster("谢谢");
                 break;
             case 3:
-                botAI->TellMaster("Off with you");
+                botAI->TellMaster("走吧");
                 break;
         }
 

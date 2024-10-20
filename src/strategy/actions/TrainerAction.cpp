@@ -162,7 +162,7 @@ bool MaintenanceAction::Execute(Event event)
         botAI->TellError("maintenance command is not allowed, please check the configuration.");
         return false;
     }
-    botAI->TellMaster("I'm maintaining");
+    botAI->TellMaster("我正在维护");
     PlayerbotFactory factory(bot, bot->GetLevel());
     factory.InitBags(false);
     factory.InitAmmo();
@@ -202,7 +202,7 @@ bool AutoGearAction::Execute(Event event)
         botAI->TellError("autogear command is not allowed, please check the configuration.");
         return false;
     }
-    botAI->TellMaster("I'm auto gearing");
+    botAI->TellMaster("我正在自动装备");
     uint32 gs = sPlayerbotAIConfig->autoGearScoreLimit == 0
                     ? 0
                     : PlayerbotFactory::CalcMixedGearScore(sPlayerbotAIConfig->autoGearScoreLimit,

@@ -91,13 +91,13 @@ bool SummonAction::Execute(Event event)
 
     if (SummonUsingGos(master, bot) || SummonUsingNpcs(master, bot))
     {
-        botAI->TellMasterNoFacing("Hello!");
+        botAI->TellMasterNoFacing("你好!");
         return true;
     }
 
     if (SummonUsingGos(bot, master) || SummonUsingNpcs(bot, master))
     {
-        botAI->TellMasterNoFacing("Welcome!");
+        botAI->TellMasterNoFacing("欢迎!");
         return true;
     }
 
@@ -217,7 +217,7 @@ bool SummonAction::Teleport(Player* summoner, Player* player)
                 if (bot->isDead() && revive)
                 {
                     bot->ResurrectPlayer(1.0f, false);
-                    botAI->TellMasterNoFacing("I live, again!");
+                    botAI->TellMasterNoFacing("我再次复活！");
                     botAI->GetAiObjectContext()->GetValue<GuidVector>("prioritized targets")->Reset();
                 }
 

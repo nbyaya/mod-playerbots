@@ -16,22 +16,22 @@ bool ReleaseSpiritAction::Execute(Event event)
 {
     if (bot->IsAlive())
     {
-        botAI->TellMasterNoFacing("I am not dead, will wait here");
+        botAI->TellMasterNoFacing("我还活着，将在这里等待");
         botAI->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
         return false;
     }
 
     if (bot->GetCorpse() && bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
     {
-        botAI->TellMasterNoFacing("I am already a spirit");
+        botAI->TellMasterNoFacing("我已经是个灵魂了");
         return false;
     }
 
     WorldPacket& p = event.getPacket();
     if (!p.empty() && p.GetOpcode() == CMSG_REPOP_REQUEST)
-        botAI->TellMasterNoFacing("Releasing...");
+        botAI->TellMasterNoFacing("释放中...");
     else
-        botAI->TellMasterNoFacing("Meet me at the graveyard");
+        botAI->TellMasterNoFacing("在墓地见我");
 
     // Death Count to prevent skeleton piles
     Player* master = GetMaster();

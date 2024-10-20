@@ -179,7 +179,7 @@ bool GoAction::Execute(Event event)
         if (sServerFacade->IsDistanceGreaterThan(sServerFacade->GetDistance2d(bot, x, y),
                                                  sPlayerbotAIConfig->reactDistance))
         {
-            botAI->TellMaster("It is too far away");
+            botAI->TellMaster("太远了");
             return false;
         }
 
@@ -222,6 +222,6 @@ bool GoAction::Execute(Event event)
         return MoveNear(bot->GetMapId(), pos.x, pos.y, pos.z + 0.5f, sPlayerbotAIConfig->followDistance);
     }
 
-    botAI->TellMaster("Whisper 'go x,y', 'go [game object]', 'go unit' or 'go position' and I will go there");
+    botAI->TellMaster("低语 'go x,y'，'go [游戏对象]'，'go unit' 或 'go position'，我会去那里");
     return false;
 }

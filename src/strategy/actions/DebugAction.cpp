@@ -88,11 +88,11 @@ bool DebugAction::Execute(Event event)
         }
         else
         {
-            botAI->TellMasterNoFacing("Destination " + destination + " not found.");
+            botAI->TellMasterNoFacing("目的地 " + destination + " 未找到.");
             return true;
         }
     }
-    else if (text.find("quest ") != std::string::npos)
+    else if (text.find("任务 ") != std::string::npos)
     {
         uint32 questId = stoi(text.substr(6));
 
@@ -100,7 +100,7 @@ bool DebugAction::Execute(Event event)
 
         if (!quest)
         {
-            botAI->TellMasterNoFacing("Quest " + text.substr(6) + " not found.");
+            botAI->TellMasterNoFacing("任务 " + text.substr(6) + " 未找到.");
             return false;
         }
 
@@ -201,7 +201,7 @@ bool DebugAction::Execute(Event event)
             endNode->setLinked(false);
         }
 
-        botAI->TellMasterNoFacing("Node " + name + " created.");
+        botAI->TellMasterNoFacing("节点 " + name + " 已创建.");
 
         sTravelNodeMap->setHasToGen();
 
@@ -218,12 +218,12 @@ bool DebugAction::Execute(Event event)
 
         if (startNode->isImportant())
         {
-            botAI->TellMasterNoFacing("Node can not be removed.");
+            botAI->TellMasterNoFacing("节点无法移除。");
         }
 
         sTravelNodeMap->m_nMapMtx.lock();
         sTravelNodeMap->removeNode(startNode);
-        botAI->TellMasterNoFacing("Node removed.");
+        botAI->TellMasterNoFacing("节点已移除。");
         sTravelNodeMap->m_nMapMtx.unlock();
 
         sTravelNodeMap->setHasToGen();
