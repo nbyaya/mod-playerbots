@@ -10,7 +10,6 @@ bool AttackNadoxGuardianAction::Execute(Event event)
     {
         return false;
     }
-    
     return Attack(target);
 }
 
@@ -24,6 +23,10 @@ bool AttackJedogaVolunteerAction::Execute(Event event)
     for (auto i = targets.begin(); i != targets.end(); ++i)
     {
         Unit* unit = botAI->GetUnit(*i);
+        if (!unit) // Null check for safety
+        {
+            continue; // Skip null or invalid units
+        }
         if (unit && unit->GetEntry() == NPC_TWILIGHT_VOLUNTEER)
         {
             target = unit;
@@ -42,22 +45,25 @@ bool AvoidShadowCrashAction::Execute(Event event)
 {
     // Could check all enemy units in range as it's possible to pull multiple of these mobs.
     // They should really be killed 1 by 1, multipulls are messy so we just handle singles for now
-    Unit* npc = AI_VALUE2(Unit*, "find target", "forgotten one");
+    Unit* unit = AI_VALUE2(Unit*, "find target", "forgotten one");
+    if (!unit) { return false; }
+
     Unit* victim = nullptr;
     float radius = 10.0f;
     float targetDist = radius + 2.0f;
-    if (!npc) { return false; }
 
     // Actively move if targeted by a shadow crash.
     // Spell check not needed, they don't have any other non-instant casts
-    if (npc->HasUnitState(UNIT_STATE_CASTING)) // && npc->FindCurrentSpellBySpellId(SPELL_SHADOW_CRASH))
+    if (unit->HasUnitState(UNIT_STATE_CASTING)) // && unit->FindCurrentSpellBySpellId(SPELL_SHADOW_CRASH))
     {
         // This doesn't seem to avoid casts very well, perhaps because this isn't checked while allies are casting.
         // TODO: Revisit if this is an issue in heroics, otherwise ignore shadow crashes for the most part.
-        victim = botAI->GetUnit(npc->GetTarget());
-        if (victim && bot->GetExactDist2d(victim) < radius)
+        victim = botAI->GetUnit(unit->GetTarget());
+        float distance = bot->GetExactDist2d(victim->GetPosition());
+
+        if (victim && distance < radius)
         {
-            return MoveAway(victim, targetDist - bot->GetExactDist2d(victim));
+            return MoveAway(victim, targetDist - distance);
         }
     }
 
@@ -67,7 +73,8 @@ bool AvoidShadowCrashAction::Execute(Event event)
     GuidVector members = AI_VALUE(GuidVector, "group members");
     for (auto& member : members)
     {
-        if (bot->GetGUID() == member)
+        Unit* unit = botAI->GetUnit(member);
+        if (!unit || bot->GetGUID() == member)
         {
             continue;
         }
