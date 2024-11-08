@@ -94,8 +94,8 @@ INSERT INTO `playerbots_speech` VALUES
 (NULL, 'taunt', '新玩具？给我的？我保证这次我不会弄坏它们！', 'say'),
 (NULL, 'taunt', '我准备好玩了！', 'say'),
 (NULL, 'taunt', '嘘…… 很快就会结束。', 'say'),
-(NULL, 'taunt', 'Aaaaaughibbrgubugbugrguburgle!', 'say'),
-(NULL, 'taunt', 'RwlRwlRwlRwl!', 'say'),
+(NULL, 'taunt', '啊啊啊！叽里咕噜……！', 'say'),
+(NULL, 'taunt', '“哇哦哇哦哇哦哇哦！', 'say'),
 (NULL, 'taunt', '你也将为我服务！', 'say'),
 (NULL, 'taunt', '告诉我…… 告诉我一切！调皮的秘密！我会从你的肉体中扯出秘密！', 'say'),
 (NULL, 'taunt', '做好准备，丧钟已经敲响！保护好你们的弱者、年轻人和老人！你们每个人都将付出最终的代价！求饶吧，清算已经来临！', 'say'),
@@ -134,7 +134,7 @@ INSERT INTO `playerbots_speech` VALUES
 (NULL, 'critical health', '治疗我！', 'yell'),
 (NULL, 'critical health', '我会死。我会死。我会死。治疗！', 'yell'),
 (NULL, 'critical health', '治疗者们，你们在哪里？我要死了！', 'yell'),
-(NULL, 'critical health', '哦，好痛。快治疗我！', 'yell'),
+(NULL, 'critical health', '哦，好痛。快治疗我！', 'yell');
 
 
 INSERT INTO `playerbots_speech` VALUES
@@ -177,7 +177,7 @@ INSERT INTO `playerbots_speech` VALUES
 (NULL, 'aoe', '我要把他们都杀了！', 'say'),
 (NULL, 'aoe', '如果坦克死了，我们就完了。', 'say'),
 (NULL, 'aoe', '啊啊啊！', 'yell'),
-(NULL, 'aoe', 'LEEEEERROOOYYYYYYYYYYYY JENNKINNNSSSSSS!!!!!!!', 'yell'),
+(NULL, 'aoe', '利若伊！詹金斯！', 'yell'),
 (NULL, 'aoe', '好的。我们在群体攻击方面有什么呢？', 'say'),
 (NULL, 'aoe', '这变得有趣了。', 'say'),
 (NULL, 'aoe', '酷。把他们集中在一个地方，来一个好的火焰冲击。', 'say'),
