@@ -29,6 +29,7 @@
 #include "MotionMaster.h"
 #include "MoveSpline.h"
 #include "MoveSplineInit.h"
+#include "NewRpgStrategy.h"
 #include "ObjectGuid.h"
 #include "PerformanceMonitor.h"
 #include "Player.h"
@@ -38,6 +39,7 @@
 #include "Playerbots.h"
 #include "PointMovementGenerator.h"
 #include "PositionValue.h"
+#include "RandomPlayerbotMgr.h"
 #include "SayAction.h"
 #include "ScriptMgr.h"
 #include "ServerFacade.h"
@@ -390,7 +392,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         }
     }
 
-    if (!bot->InBattleground() && !bot->inRandomLfgDungeon() && bot->GetGroup())
+    if (!bot->InBattleground() && !bot->inRandomLfgDungeon() && bot->GetGroup() && !bot->GetGroup()->isLFGGroup())
 	{
 		Player* leader = bot->GetGroup()->GetLeader();
 		if (leader && leader != bot) // Checks if the leader is valid and is not the bot itself
@@ -403,6 +405,27 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 			}
 		}
 	}
+
+    if (bot->GetGroup() && bot->GetGroup()->isLFGGroup())
+    {
+        bool hasRealPlayer = false;
+        for (GroupReference* ref = bot->GetGroup()->GetFirstMember(); ref; ref = ref->next())
+        {
+            Player* member = ref->GetSource();
+            if (!member)
+                continue;
+            PlayerbotAI* memberAI = GET_PLAYERBOT_AI(member);
+            if (memberAI && !memberAI->IsRealPlayer())
+                continue;
+            hasRealPlayer = true;
+            break;
+        }
+        if (!hasRealPlayer)
+        {
+            bot->RemoveFromGroup();
+            ResetStrategies();
+        }
+    }
 
     bool min = minimal;
     UpdateAIInternal(elapsed, min);
@@ -718,7 +741,7 @@ void PlayerbotAI::HandleTeleportAck()
         // SetNextCheckDelay(urand(2000, 5000));
         if (sPlayerbotAIConfig->applyInstanceStrategies)
             ApplyInstanceStrategies(bot->GetMapId(), true);
-        Reset();
+        Reset(true);
     }
 
     SetNextCheckDelay(sPlayerbotAIConfig->globalCoolDown);
@@ -767,14 +790,15 @@ void PlayerbotAI::Reset(bool full)
             ->setTarget(sTravelMgr->nullTravelDestination, sTravelMgr->nullWorldPosition, true);
         aiObjectContext->GetValue<TravelTarget*>("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
         aiObjectContext->GetValue<TravelTarget*>("travel target")->Get()->setExpireIn(1000);
+        rpgInfo = NewRpgInfo();
     }
 
     aiObjectContext->GetValue<GuidSet&>("ignore rpg target")->Get().clear();
 
     bot->GetMotionMaster()->Clear();
-    // bot->CleanupAfterTaxiFlight();
-    InterruptSpell();
 
+    InterruptSpell();
+    
     if (full)
     {
         for (uint8 i = 0; i < BOT_STATE_MAX; i++)
@@ -1309,11 +1333,9 @@ void PlayerbotAI::DoNextAction(bool min)
     // if in combat but stick with old data - clear targets
     if (currentEngine == engines[BOT_STATE_NON_COMBAT] && bot->IsInCombat())
     {
-        if (aiObjectContext->GetValue<Unit*>("current target")->Get() != nullptr ||
-            aiObjectContext->GetValue<ObjectGuid>("pull target")->Get() != ObjectGuid::Empty ||
-            aiObjectContext->GetValue<Unit*>("dps target")->Get() != nullptr)
+        if (aiObjectContext->GetValue<Unit*>("current target")->Get() != nullptr)
         {
-            Reset();
+            aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
         }
     }
 
@@ -4111,21 +4133,17 @@ inline bool ZoneHasRealPlayers(Player* bot)
     {
         return false;
     }
-
-    Map::PlayerList const& players = bot->GetMap()->GetPlayers();
-    if (players.IsEmpty())
+    
+    for (Player* player : sRandomPlayerbotMgr->GetPlayers())
     {
-        return false;
-    }
-
-    for (auto const& itr : players)
-    {
-        Player* player = itr.GetSource();
-        if (!player || !player->IsVisible())
+        if (player->GetMapId() != bot->GetMapId())
+            continue;
+        
+        if (player->IsGameMaster() && !player->IsVisible())
         {
             continue;
         }
-
+        
         if (player->GetZoneId() == bot->GetZoneId())
         {
             PlayerbotAI* botAI = GET_PLAYERBOT_AI(player);
@@ -4141,11 +4159,26 @@ inline bool ZoneHasRealPlayers(Player* bot)
 
 bool PlayerbotAI::AllowActive(ActivityType activityType)
 {
+    // when botActiveAlone is 100% and smartScale disabled
+    if (sPlayerbotAIConfig->botActiveAlone >= 100 && !sPlayerbotAIConfig->botActiveAloneSmartScale)
+    {
+        return true;
+    }
+
+    // Is in combat. Always defend yourself.
+    if (activityType != OUT_OF_PARTY_ACTIVITY && activityType != PACKET_ACTIVITY)
+    {
+        if (bot->IsInCombat())
+        {
+            return true;
+        }
+    }
+    
     // only keep updating till initializing time has completed,
     // which prevents unneeded expensive GameTime calls.
     if (_isBotInitializing)
     {
-        _isBotInitializing = GameTime::GetUptime().count() < sPlayerbotAIConfig->maxRandomBots * 0.12;
+        _isBotInitializing = GameTime::GetUptime().count() < sPlayerbotAIConfig->maxRandomBots * 0.11;
 
         // no activity allowed during bot initialization
         if (_isBotInitializing)
@@ -4165,16 +4198,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     {
         return true;
     }
-
-    // Is in combat. Defend yourself.
-    if (activityType != OUT_OF_PARTY_ACTIVITY && activityType != PACKET_ACTIVITY)
-    {
-        if (bot->IsInCombat())
-        {
-            return true;
-        }
-    }
-
+    
     // bot map has active players.
     if (sPlayerbotAIConfig->BotActiveAloneForceWhenInMap)
     {
@@ -4203,7 +4227,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     }
 
     // Player is near. Always active.
-    if (HasPlayerNearby(sPlayerbotAIConfig->BotActiveAloneWhenInRadius))
+    if (HasPlayerNearby(sPlayerbotAIConfig->BotActiveAloneForceWhenInRadius))
     {
         return true;
     }
@@ -4313,11 +4337,7 @@ bool PlayerbotAI::AllowActive(ActivityType activityType)
     {
         return false;
     }
-    if (sPlayerbotAIConfig->botActiveAlone >= 100 && !sPlayerbotAIConfig->botActiveAloneSmartScale)
-    {
-        return true;
-    }
-
+    
     // #######################################################################################
     // All mandatory conditations are checked to be active or not, from here the remaining
     // situations are usable for scaling when enabled.
@@ -4358,33 +4378,18 @@ bool PlayerbotAI::AllowActivity(ActivityType activityType, bool checkNow)
 
 uint32 PlayerbotAI::AutoScaleActivity(uint32 mod)
 {
-    uint32 maxDiff = sWorldUpdateTime.GetAverageUpdateTime();
+    uint32 maxDiff = sWorldUpdateTime.GetMaxUpdateTimeOfCurrentTable();
+    uint32 diffLimitFloor = sPlayerbotAIConfig->botActiveAloneSmartScaleDiffLimitfloor;
+    uint32 diffLimitCeiling = sPlayerbotAIConfig->botActiveAloneSmartScaleDiffLimitCeiling;
+    double spreadSize = (double)(diffLimitCeiling - diffLimitFloor) / 6;
 
-    if (maxDiff > 500) return 0;
-    if (maxDiff > 250)
-    {
-        if (Map* map = bot->GetMap())
-        {
-            if (map->GetEntry()->IsWorldMap())
-            {
-                if (!HasRealPlayers(map))
-                {
-                    return 0;
-                }
-
-                if (!map->IsGridLoaded(bot->GetPositionX(), bot->GetPositionY()))
-                {
-                    return 0;
-                }
-            }
-        }
-
-        return (mod * 1) / 10;
-    }
-    if (maxDiff > 200) return (mod * 3) / 10;
-    if (maxDiff > 150) return (mod * 5) / 10;
-    if (maxDiff > 100) return (mod * 6) / 10;
-    if (maxDiff > 75)  return (mod * 9) / 10;
+    // apply scaling
+    if (maxDiff > diffLimitCeiling)                  return 0;
+    if (maxDiff > diffLimitFloor + (4 * spreadSize)) return (mod * 1) / 10;
+    if (maxDiff > diffLimitFloor + (3 * spreadSize)) return (mod * 3) / 10;
+    if (maxDiff > diffLimitFloor + (2 * spreadSize)) return (mod * 5) / 10;
+    if (maxDiff > diffLimitFloor + (1 * spreadSize)) return (mod * 7) / 10;
+    if (maxDiff > diffLimitFloor)                    return (mod * 9) / 10;
 
     return mod;
 }

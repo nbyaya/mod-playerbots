@@ -262,14 +262,18 @@ public:
     bool randomBotFixedLevel;
     bool disableRandomLevels;
     uint32 playerbotsXPrate;
+    uint32 randomBotAllianceRatio;
+    uint32 randomBotHordeRatio;
     bool disableDeathKnightLogin;
     uint32 botActiveAlone;
-    uint32 BotActiveAloneWhenInRadius;
+    uint32 BotActiveAloneForceWhenInRadius;
     bool BotActiveAloneForceWhenInZone;
     bool BotActiveAloneForceWhenInMap;
     bool BotActiveAloneForceWhenIsFriend;
     bool BotActiveAloneForceWhenInGuild;
     bool botActiveAloneSmartScale;
+    uint32 botActiveAloneSmartScaleDiffLimitfloor;
+    uint32 botActiveAloneSmartScaleDiffLimitCeiling;
     uint32 botActiveAloneSmartScaleWhenMinLevel;
     uint32 botActiveAloneSmartScaleWhenMaxLevel;
 
@@ -287,6 +291,7 @@ public:
     bool autoUpgradeEquip;
     bool autoLearnTrainerSpells;
     bool autoDoQuests;
+    bool enableNewRpgStrategy;
     bool syncLevelWithPlayers;
     bool freeFood;
     bool autoLearnQuestSpells;
@@ -320,6 +325,11 @@ public:
     int32 addClassAccountPoolSize;
     int32 maintenanceCommand;
     int32 autoGearCommand, autoGearCommandAltBots, autoGearQualityLimit, autoGearScoreLimit;
+
+    uint32 useGroundMountAtMinLevel;
+    uint32 useFastGroundMountAtMinLevel;
+    uint32 useFlyMountAtMinLevel;
+    uint32 useFastFlyMountAtMinLevel;
 
     std::string const GetTimestampStr();
     bool hasLog(std::string const fileName)

@@ -207,7 +207,10 @@ void PlayerbotFactory::Randomize(bool incremental)
     Prepare();
     LOG_DEBUG("playerbots", "Resetting player...");
     PerformanceMonitorOperation* pmo = sPerformanceMonitor->start(PERF_MON_RNDBOT, "PlayerbotFactory_Reset");
-    bot->resetTalents(true);
+    if (!sPlayerbotAIConfig->equipmentPersistence || level < sPlayerbotAIConfig->equipmentPersistenceLevel)
+    {
+        bot->resetTalents(true);
+    }
     // bot->SaveToDB(false, false);
     ClearSkills();
     // bot->SaveToDB(false, false);
@@ -267,7 +270,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor->start(PERF_MON_RNDBOT, "PlayerbotFactory_Talents");
     LOG_DEBUG("playerbots", "Initializing talents...");
-    if (!sPlayerbotAIConfig->equipmentPersistence || bot->GetLevel() < sPlayerbotAIConfig->equipmentPersistenceLevel)
+    if (!incremental || !sPlayerbotAIConfig->equipmentPersistence || bot->GetLevel() < sPlayerbotAIConfig->equipmentPersistenceLevel)
     {
         InitTalentsTree();
     }
@@ -302,7 +305,7 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     pmo = sPerformanceMonitor->start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
     LOG_DEBUG("playerbots", "Initializing equipmemt...");
-    if (!sPlayerbotAIConfig->equipmentPersistence || bot->GetLevel() < sPlayerbotAIConfig->equipmentPersistenceLevel)
+    if (!incremental || !sPlayerbotAIConfig->equipmentPersistence || bot->GetLevel() < sPlayerbotAIConfig->equipmentPersistenceLevel)
     {
         InitEquipment(incremental, incremental ? false : sPlayerbotAIConfig->twoRoundsGearInit);
     }
@@ -424,7 +427,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     bot->SetHealth(bot->GetMaxHealth());
     bot->SetPower(POWER_MANA, bot->GetMaxPower(POWER_MANA));
     bot->SaveToDB(false, false);
-    LOG_INFO("playerbots", "Initialization Done.");
+    // LOG_INFO("playerbots", "Initialization Done.");
     if (pmo)
         pmo->finish();
 }
@@ -2822,10 +2825,10 @@ uint32 PlayerbotFactory::CalcMixedGearScore(uint32 gs, uint32 quality)
 
 void PlayerbotFactory::InitMounts()
 {
-    uint32 firstmount = 20;
-    uint32 secondmount = 40;
-    uint32 thirdmount = 60;
-    uint32 fourthmount = 70;
+    uint32 firstmount = sPlayerbotAIConfig->useGroundMountAtMinLevel;
+    uint32 secondmount = sPlayerbotAIConfig->useFastGroundMountAtMinLevel;
+    uint32 thirdmount = sPlayerbotAIConfig->useFlyMountAtMinLevel;
+    uint32 fourthmount = sPlayerbotAIConfig->useFastFlyMountAtMinLevel;
 
     if (bot->GetLevel() < firstmount)
         return;
@@ -3127,7 +3130,7 @@ void PlayerbotFactory::InitReagents()
                 items.push_back({17030, 40});  // Ankh
             break;
         case CLASS_WARLOCK:
-            items.push_back({6265, 10});  // shard
+            items.push_back({6265, 20});  // shard
             break;
         case CLASS_PRIEST:
             if (level >= 48 && level < 60)

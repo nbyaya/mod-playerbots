@@ -8,6 +8,7 @@
 #include "ChooseRpgTargetAction.h"
 #include "Event.h"
 #include "LootObjectStack.h"
+#include "NewRpgStrategy.h"
 #include "Playerbots.h"
 #include "PossibleRpgTargetsValue.h"
 #include "PvpTriggers.h"
@@ -35,26 +36,36 @@ bool AttackAnythingAction::isUseful()
 
     if (!AI_VALUE(bool, "can move around"))
         return false;
-
-    if (context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() &&
-        ChooseRpgTargetAction::isFollowValid(
-            bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition()))  // Bot is traveling
-        return false;
-    // if (bot->IsInCombat()) {
+    
+        
+    // if (context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling() &&
+    //     ChooseRpgTargetAction::isFollowValid(
+    //         bot, *context->GetValue<TravelTarget*>("travel target")->Get()->getPosition()))  // Bot is traveling
     //     return false;
-    // }
+
     Unit* target = GetTarget();
 
     if (!target)
         return false;
 
-    std::string const name = std::string(target->GetName());
-    if (!name.empty() && name.find("Dummy") != std::string::npos)  // Target is not a targetdummy
+    bool inactiveGrindStatus = botAI->rpgInfo.status == NewRpgStatus::GO_GRIND ||
+                               botAI->rpgInfo.status == NewRpgStatus::NEAR_NPC ||
+                               botAI->rpgInfo.status == NewRpgStatus::REST ||
+                               botAI->rpgInfo.status == NewRpgStatus::GO_INNKEEPER;
+
+    if (inactiveGrindStatus && bot->GetDistance(target) > 25.0f)
         return false;
 
-    // if (!ChooseRpgTargetAction::isFollowValid(bot, target))                               //Do not grind mobs far
-    // away from master.
-    //     return false;
+    std::string const name = std::string(target->GetName());
+    // Check for invalid targets: Dummy, Charge Target, Melee Target, Ranged Target
+    if (!name.empty() &&
+        (name.find("Dummy") != std::string::npos ||
+         name.find("Charge Target") != std::string::npos ||
+         name.find("Melee Target") != std::string::npos ||
+         name.find("Ranged Target") != std::string::npos))
+    {
+        return false;  // Target is one of the disallowed types
+    }
 
     return true;
 }

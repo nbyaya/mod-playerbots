@@ -8,6 +8,7 @@
 #	PLAYERBOT SETTINGS
 #		GENERAL
 #		SUMMON OPTIONS
+#       MOUNT
 #		GEAR
 #		LOOTING
 #		TIMERS
@@ -193,6 +194,36 @@ AiPlayerbot.ReviveBotWhenSummoned = 1
 # Enable/Disable bot repair gear when summon (0 = no, 1 = yes)
 # default: 1
 AiPlayerbot.BotRepairWhenSummon = 1
+
+#
+#
+#
+####################################################################################################
+
+####################################################################################################
+# MOUNT
+#
+#
+
+# Defines at what level a bot will naturally use its 60% ground mount
+# note: was level 20 during WotLK, 30 during TBC, 40 during Vanilla
+# default: 20
+AiPlayerbot.UseGroundMountAtMinLevel = 20
+
+# Defines at what level a bot will naturally use its 100% fast ground mount
+# note: was level 40 during WotLK, 60 during Vanilla
+# default: 40
+AiPlayerbot.UseFastGroundMountAtMinLevel = 40
+
+# Defines at what level a bot will naturally use its 150% fly mount
+# note: was level 60 during WotLK, 70 during TBC
+# default: 60
+AiPlayerbot.UseFlyMountAtMinLevel = 60
+
+# Defines at what level a bot will naturally use its 280% fast fly mount
+# note: was level 70 during WotLK and TBC
+# default: 70
+AiPlayerbot.UseFastFlyMountAtMinLevel = 70
 
 #
 #
@@ -495,6 +526,11 @@ AiPlayerbot.PreQuests = 0
 # Enable LFG for random bots
 AiPlayerbot.RandomBotJoinLfg = 1
 
+# Percentage ratio of alliance and horde
+# Need to reset rndbot after changing the setting (.playerbot rndbot reset)
+AiPlayerbot.RandomBotAllianceRatio = 50
+AiPlayerbot.RandomBotHordeRatio = 50
+
 # Disable death knight for bots login
 # Need to reset rndbot after changing the setting (.playerbot rndbot reset)
 AiPlayerbot.DisableDeathKnightLogin = 0
@@ -595,6 +631,11 @@ AiPlayerbot.RandomBotGroupNearby = 0
 # Random Bots will pick quests on their own and try to complete
 # Default: 1 (enabled)
 AiPlayerbot.AutoDoQuests = 1
+
+# Random Bots will behave more like real players (exprimental)
+# This option will override AutoDoQuests
+# Default: 0 (disabled)
+AiPlayerbot.EnableNewRpgStrategy = 0
 
 # Quest items to leave (do not destroy)
 AiPlayerbot.RandomBotQuestItems = "6948,5175,5176,5177,5178,16309,12382,13704,11000"
@@ -717,10 +758,10 @@ AiPlayerbot.RandomBotArenaTeamMinRating = 1000
 AiPlayerbot.DeleteRandomBotArenaTeams = 0
 
 # PvP Restricted Zones (bots don't pvp)
-AiPlayerbot.PvpProhibitedZoneIds = "2255,656,2361,2362,2363,976,35,2268,3425,392,541,1446,3828,3712,3738,3565,3539,3623,4152,3988,4658,4284,4418,4436,4275,4323,4395,3703,4298"
+AiPlayerbot.PvpProhibitedZoneIds = "2255,656,2361,2362,2363,976,35,2268,3425,392,541,1446,3828,3712,3738,3565,3539,3623,4152,3988,4658,4284,4418,4436,4275,4323,4395,3703,4298,139"
 
 # PvP Restricted Areas (bots don't pvp)
-AiPlayerbot.PvpProhibitedAreaIds = "976,35,392"
+AiPlayerbot.PvpProhibitedAreaIds = "976,35,392,2268,4161,4010"
 
 # Improve react speed in battleground and arena (may cause lag)
 AiPlayerbot.FastReactInBG = 1
@@ -1062,6 +1103,7 @@ AiPlayerbot.WorldBuff.0.5.2.80.80 = 53755,57327					#PRIEST SHADOW
 AiPlayerbot.WorldBuff.0.6.0.80.80 = 53758,57356					#DEATH KNIGHT BLOOD
 AiPlayerbot.WorldBuff.0.6.1.80.80 = 53760,57358					#DEATH KNIGHT FROST
 AiPlayerbot.WorldBuff.0.6.2.80.80 = 53760,57358					#DEATH KNIGHT UNHOLY
+AiPlayerbot.WorldBuff.0.6.3.80.80 = 53760,57371					#DEATH KNIGHT BLOOD DPS
 AiPlayerbot.WorldBuff.0.7.0.80.80 = 53755,57327					#SHAMAN ELEMENTAL
 AiPlayerbot.WorldBuff.0.7.1.80.80 = 53760,57325					#SHAMAN ENHANCEMENT
 AiPlayerbot.WorldBuff.0.7.2.80.80 = 53755,57327					#SHAMAN RESTORATION
@@ -1072,8 +1114,9 @@ AiPlayerbot.WorldBuff.0.9.0.80.80 = 53755,57327					#WARLOCK AFFLICTION
 AiPlayerbot.WorldBuff.0.9.1.80.80 = 53755,57327					#WARLOCK DEMONOLOGY
 AiPlayerbot.WorldBuff.0.9.2.80.80 = 53755,57327					#WARLOCK DESTRUCTION
 AiPlayerbot.WorldBuff.0.11.0.80.80 = 53755,57327				#DRUID BALANCE
-AiPlayerbot.WorldBuff.0.11.1.80.80 = 53749,53763,57367			#DRUID FERAL
+AiPlayerbot.WorldBuff.0.11.1.80.80 = 53749,53763,57367			#DRUID FERAL BEAR
 AiPlayerbot.WorldBuff.0.11.2.80.80 = 54212,57334				#DRUID RESTORATION
+AiPlayerbot.WorldBuff.0.11.3.80.80 = 53760,57358			    #DRUID FERAL CAT
 
 #
 #
@@ -1522,10 +1565,19 @@ AiPlayerbot.BotActiveAloneForceWhenInMap = 0
 AiPlayerbot.BotActiveAloneForceWhenIsFriend = 1
 AiPlayerbot.BotActiveAloneForceWhenInGuild = 1
 
-# Specify smart scaling is enabled or not.
+# SmartScale is enabled or not.
 # The default is 1. When enabled (smart) scales the 'BotActiveAlone' value.
-# Only when botLevel is between WhenMinLevel and WhenMaxLevel.
+# (The scaling will be overruled by the BotActiveAloneForceWhen...rules)
+#
+#   Limitfloor - when DIFF (latency) above floor, activity scaling is applied starting with 90%
+#   LimitCeiling - when DIFF (latency) above ceiling, activity is 0%;
+#
+#   MinLevel - only apply scaling when level is above or equal to min(bot)Level
+#   MaxLevel - only apply scaling when level is lower or equal of max(bot)Level
+#
 AiPlayerbot.botActiveAloneSmartScale = 1
+AiPlayerbot.botActiveAloneSmartScaleDiffLimitfloor = 50
+AiPlayerbot.botActiveAloneSmartScaleDiffLimitCeiling = 200
 AiPlayerbot.botActiveAloneSmartScaleWhenMinLevel = 1
 AiPlayerbot.botActiveAloneSmartScaleWhenMaxLevel = 80
 
