@@ -15,13 +15,14 @@
 #include "Common.h"
 #include "Event.h"
 #include "Item.h"
+#include "NewRpgStrategy.h"
 #include "PlayerbotAIBase.h"
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotSecurity.h"
 #include "PlayerbotTextMgr.h"
 #include "SpellAuras.h"
+#include "Util.h"
 #include "WorldPacket.h"
-#include "NewRpgStrategy.h"
 
 class AiObjectContext;
 class Creature;
@@ -419,7 +420,7 @@ public:
     bool HasAggro(Unit* unit);
     int32 GetGroupSlotIndex(Player* player);
     int32 GetRangedIndex(Player* player);
-    int32 GetClassIndex(Player* player, uint8_t cls);
+    int32 GetClassIndex(Player* player, uint8 cls);
     int32 GetRangedDpsIndex(Player* player);
     int32 GetMeleeIndex(Player* player);
 
@@ -573,13 +574,16 @@ public:
     std::set<uint32> GetCurrentIncompleteQuestIds();
     void PetFollow();
     static float GetItemScoreMultiplier(ItemQualities quality);
+    static bool IsHealingSpell(uint32 spellFamilyName, flag96 spelFalimyFlags);
+    static SpellFamilyNames Class2SpellFamilyName(uint8 cls);
     NewRpgInfo rpgInfo;
 
 private:
     static void _fillGearScoreData(Player* player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore,
                                    bool mixed = false);
     bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
-
+    void UpdateAIGroupMembership();
+    Item* FindItemInInventory(std::function<bool(ItemTemplate const*)> checkItem) const;
     void HandleCommands();
     void HandleCommand(uint32 type, const std::string& text, Player& fromPlayer, const uint32 lang = LANG_UNIVERSAL);
     bool _isBotInitializing = false;
